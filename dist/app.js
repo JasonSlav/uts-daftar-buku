@@ -3,15 +3,12 @@
 class Buku {
     // Konstruktor untuk inisialisasi objek Buku
     constructor(judul, penulis, tahunTerbit) {
-        // Mengatur ID buku dan menaikkan nextId untuk buku berikutnya
         this._id = Buku.nextId++;
         this._judul = judul;
         this._penulis = penulis;
         this._tahunTerbit = tahunTerbit;
     }
     // Getter dan setter untuk properti buku
-    // Getter: Metode untuk mengakses nilai properti private
-    // Setter: Metode untuk mengubah nilai properti private
     get id() { return this._id; }
     get judul() { return this._judul; }
     set judul(value) { this._judul = value; }
@@ -28,7 +25,7 @@ class Buku {
 Buku.nextId = 1;
 // Kelas BukuFiksi: Turunan dari Buku untuk buku-buku fiksi
 class BukuFiksi extends Buku {
-    // Konstruktor BukuFiksi memanggil konstruktor Buku (super) dan menambahkan subGenre
+    // Konstruktor BukuFiksi
     constructor(judul, penulis, tahunTerbit, subGenre) {
         super(judul, penulis, tahunTerbit);
         this._subGenre = subGenre;
@@ -43,7 +40,7 @@ class BukuFiksi extends Buku {
 }
 // Kelas BukuNonFiksi: Turunan dari Buku untuk buku-buku non-fiksi
 class BukuNonFiksi extends Buku {
-    // Konstruktor BukuNonFiksi memanggil konstruktor Buku (super) dan menambahkan topik
+    // Konstruktor BukuNonFiksi
     constructor(judul, penulis, tahunTerbit, topik) {
         super(judul, penulis, tahunTerbit);
         this._topik = topik;
@@ -62,26 +59,16 @@ class KoleksiBuku {
         // Array untuk menyimpan semua buku dalam koleksi
         this.daftarBuku = [];
     }
-    // Tambahkan metode baru untuk mengatur nextId
-    aturNextId() {
-        if (this.daftarBuku.length > 0) {
-            const maxId = Math.max(...this.daftarBuku.map(buku => buku.id));
-            Buku.nextId = maxId + 1;
-        }
-        else {
-            Buku.nextId = 1;
-        }
-    }
     // Menambahkan buku baru ke koleksi
     tambahBukuKeKoleksi(buku) {
         this.daftarBuku.push(buku);
-        this.aturNextId(); // Atur nextId setelah menambah buku
         this.perbaruiTampilanDaftarBuku();
     }
     // Memperbarui informasi buku yang sudah ada
     perbaruiInfoBuku(id, judul, penulis, tahunTerbit, jenisBuku, detailSpesifik) {
         const bukuLama = this.cariBukuBerdasarkanId(id);
         if (bukuLama) {
+            // Membuat objek buku baru dengan informasi yang diperbarui
             let bukuBaru;
             if (jenisBuku === 'fiksi') {
                 bukuBaru = new BukuFiksi(judul, penulis, tahunTerbit, detailSpesifik);
@@ -107,7 +94,7 @@ class KoleksiBuku {
             outputElement.innerHTML = this.daftarBuku.length === 0 ? "<p>Belum ada buku dalam koleksi.</p>" :
                 "<h2>Koleksi Buku:</h2>" + this.daftarBuku.map(buku => `
                     <div>
-                        <span>00</span>${buku.id}. ${buku.getDeskripsiLengkap()}
+                        <span><strong>- </strong></span>${buku.getDeskripsiLengkap()}
                         <button onclick="managerBuku.tampilkanFormEditBuku(${buku.id})">Edit</button>
                         <button onclick="managerBuku.konfirmasiHapusBuku(${buku.id})">Hapus</button>
                     </div>
@@ -117,7 +104,6 @@ class KoleksiBuku {
     // Menghapus buku dari koleksi
     hapusBukuDariKoleksi(id) {
         this.daftarBuku = this.daftarBuku.filter(b => b.id !== id);
-        this.aturNextId(); // Atur nextId setelah menghapus buku
         this.perbaruiTampilanDaftarBuku();
     }
     // Mencari buku berdasarkan ID

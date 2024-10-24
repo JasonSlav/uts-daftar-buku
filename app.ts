@@ -2,6 +2,7 @@
 abstract class Buku {
     // Variabel statis untuk menghasilkan ID unik, dimulai dari 1
     public static nextId: number = 1;
+    
     // Properti private untuk menyimpan data buku
     private _id: number;
     private _judul: string;
@@ -10,7 +11,6 @@ abstract class Buku {
 
     // Konstruktor untuk inisialisasi objek Buku
     constructor(judul: string, penulis: string, tahunTerbit: number) {
-        // Mengatur ID buku dan menaikkan nextId untuk buku berikutnya
         this._id = Buku.nextId++;
         this._judul = judul;
         this._penulis = penulis;
@@ -18,8 +18,6 @@ abstract class Buku {
     }
 
     // Getter dan setter untuk properti buku
-    // Getter: Metode untuk mengakses nilai properti private
-    // Setter: Metode untuk mengubah nilai properti private
     get id(): number { return this._id; }
     get judul(): string { return this._judul; }
     set judul(value: string) { this._judul = value; }
@@ -41,7 +39,7 @@ abstract class Buku {
 class BukuFiksi extends Buku {
     private _subGenre: string;
 
-    // Konstruktor BukuFiksi memanggil konstruktor Buku (super) dan menambahkan subGenre
+    // Konstruktor BukuFiksi
     constructor(judul: string, penulis: string, tahunTerbit: number, subGenre: string) {
         super(judul, penulis, tahunTerbit);
         this._subGenre = subGenre;
@@ -61,7 +59,7 @@ class BukuFiksi extends Buku {
 class BukuNonFiksi extends Buku {
     private _topik: string;
 
-    // Konstruktor BukuNonFiksi memanggil konstruktor Buku (super) dan menambahkan topik
+    // Konstruktor BukuNonFiksi
     constructor(judul: string, penulis: string, tahunTerbit: number, topik: string) {
         super(judul, penulis, tahunTerbit);
         this._topik = topik;
@@ -82,20 +80,9 @@ class KoleksiBuku {
     // Array untuk menyimpan semua buku dalam koleksi
     private daftarBuku: Buku[] = [];
 
-    // Tambahkan metode baru untuk mengatur nextId
-    private aturNextId(): void {
-        if (this.daftarBuku.length > 0) {
-            const maxId = Math.max(...this.daftarBuku.map(buku => buku.id));
-            Buku.nextId = maxId + 1;
-        } else {
-            Buku.nextId = 1;
-        }
-    }
-
     // Menambahkan buku baru ke koleksi
     public tambahBukuKeKoleksi(buku: Buku): void {
         this.daftarBuku.push(buku);
-        this.aturNextId(); // Atur nextId setelah menambah buku
         this.perbaruiTampilanDaftarBuku();
     }
 
@@ -103,6 +90,7 @@ class KoleksiBuku {
     public perbaruiInfoBuku(id: number, judul: string, penulis: string, tahunTerbit: number, jenisBuku: string, detailSpesifik: string): void {
         const bukuLama = this.cariBukuBerdasarkanId(id);
         if (bukuLama) {
+            // Membuat objek buku baru dengan informasi yang diperbarui
             let bukuBaru: Buku;
             if (jenisBuku === 'fiksi') {
                 bukuBaru = new BukuFiksi(judul, penulis, tahunTerbit, detailSpesifik);
@@ -128,7 +116,7 @@ class KoleksiBuku {
             outputElement.innerHTML = this.daftarBuku.length === 0 ? "<p>Belum ada buku dalam koleksi.</p>" :
                 "<h2>Koleksi Buku:</h2>" + this.daftarBuku.map(buku => `
                     <div>
-                        <span>00</span>${buku.id}. ${buku.getDeskripsiLengkap()}
+                        <span><strong>- </strong></span>${buku.getDeskripsiLengkap()}
                         <button onclick="managerBuku.tampilkanFormEditBuku(${buku.id})">Edit</button>
                         <button onclick="managerBuku.konfirmasiHapusBuku(${buku.id})">Hapus</button>
                     </div>
@@ -139,7 +127,6 @@ class KoleksiBuku {
     // Menghapus buku dari koleksi
     public hapusBukuDariKoleksi(id: number): void {
         this.daftarBuku = this.daftarBuku.filter(b => b.id !== id);
-        this.aturNextId(); // Atur nextId setelah menghapus buku
         this.perbaruiTampilanDaftarBuku();
     }
     
