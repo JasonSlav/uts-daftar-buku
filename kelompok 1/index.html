@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Koleksi Buku</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input,
+    select,
+    button {
+      padding: 5px;
+    }
+
+    #output {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Koleksi Buku Saya</h1>
+
+  <form id="bukuForm">
+    <input type="text" id="judul" placeholder="Judul Buku" required>
+    <input type="text" id="penulis" placeholder="Penulis Buku" required>
+    <input type="number" id="tahunTerbit" placeholder="Tahun Terbit" required>
+    <select id="jenisBuku" required>
+      <option value="">Pilih Jenis Buku</option>
+      <option value="fiksi">Fiksi</option>
+      <option value="nonfiksi">Non-Fiksi</option>
+    </select>
+    <input type="text" id="detailSpesifik" placeholder="Sub-Genre atau Topik" required>
+    <button type="button" id="tambahBukuBtn">Tambah Buku</button>
+  </form>
+  <div id="output"></div>
+  <script src="app.js"></script>
+</body>
+
+</html>

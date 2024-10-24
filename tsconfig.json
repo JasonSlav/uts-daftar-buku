@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    // Mengatur versi JavaScript yang dihasilkan (ES6)
+    "target": "es6",
+
+    // Menentukan sistem modul yang digunakan (CommonJS)
+    "module": "commonjs",
+
+    // Menentukan folder output untuk file hasil kompilasi
+    "outDir": "./dist",
+
+    // Menentukan direktori root untuk file sumber
+    "rootDir": "./",
+
+    // Memungkinkan interoperabilitas yang lebih baik dengan modul CommonJS
+    "esModuleInterop": true,
+
+    // Memastikan konsistensi kapitalisasi dalam penamaan file
+    "forceConsistentCasingInFileNames": true,
+
+    // Mengaktifkan semua opsi pemeriksaan tipe yang ketat
+    "strict": true,
+  },
+
+  // Menentukan file yang akan dikompilasi
+  "include": [
+    "./app.ts"
+  ],
+}
