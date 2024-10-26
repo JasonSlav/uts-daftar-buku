@@ -1,120 +1,92 @@
 // Kelas abstrak Buku: Mendefinisikan struktur dasar untuk semua jenis buku
+// Abstraksi: Kelas ini menyediakan kerangka umum untuk semua jenis buku
 abstract class Buku {
     // Variabel statis untuk menghasilkan ID unik, dimulai dari 1
-    public static nextId: number = 1;
-    
-    // Properti private untuk menyimpan data buku
-    private _id: number;
-    private _judul: string;
-    private _penulis: string;
-    private _tahunTerbit: number;
+    // Enkapsulasi: nextId adalah private dan hanya diakses melalui konstruktor
+    private static nextId = 1;
 
-    // Konstruktor untuk inisialisasi objek Buku
-    constructor(judul: string, penulis: string, tahunTerbit: number) {
-        this._id = Buku.nextId++;
-        this._judul = judul;
-        this._penulis = penulis;
-        this._tahunTerbit = tahunTerbit;
-    }
+    // Konstruktor: Inisialisasi properti buku
+    // Enkapsulasi: _id adalah private, sementara properti lain adalah public
+    constructor(
+        private _id: number = Buku.nextId++,
+        public judul: string,
+        public penulis: string,
+        public tahunTerbit: number
+    ) {}
 
-    // Getter dan setter untuk properti buku
+    // Getter untuk id: Memungkinkan akses read-only ke _id
     get id(): number { return this._id; }
-    get judul(): string { return this._judul; }
-    set judul(value: string) { this._judul = value; }
-    get penulis(): string { return this._penulis; }
-    set penulis(value: string) { this._penulis = value; }
-    get tahunTerbit(): number { return this._tahunTerbit; }
-    set tahunTerbit(value: number) { this._tahunTerbit = value; }
 
-    // Metode abstrak yang harus diimplementasikan oleh kelas turunan
-    protected abstract getDeskripsiGenre(): string;
-    
+    // Metode abstrak: Harus diimplementasikan oleh kelas turunan
+    // Polimorfisme: Setiap jenis buku akan memiliki implementasi sendiri
+    abstract getDeskripsiGenre(): string;
+
     // Metode untuk mendapatkan deskripsi lengkap buku
-    public getDeskripsiLengkap(): string {
-        return `${this._judul} oleh ${this._penulis} (${this._tahunTerbit}) - ${this.getDeskripsiGenre()}`;
+    getDeskripsiLengkap(): string {
+        return `${this.judul} oleh ${this.penulis} (${this.tahunTerbit}) - ${this.getDeskripsiGenre()}`;
     }
 }
 
 // Kelas BukuFiksi: Turunan dari Buku untuk buku-buku fiksi
+// Pewarisan: BukuFiksi mewarisi properti dan metode dari Buku
 class BukuFiksi extends Buku {
-    private _subGenre: string;
-
     // Konstruktor BukuFiksi
-    constructor(judul: string, penulis: string, tahunTerbit: number, subGenre: string) {
-        super(judul, penulis, tahunTerbit);
-        this._subGenre = subGenre;
+    constructor(judul: string, penulis: string, tahunTerbit: number, public subGenre: string) {
+        // super: Memanggil konstruktor kelas induk (Buku)
+        super(undefined, judul, penulis, tahunTerbit);
     }
 
-    // Getter dan setter untuk subGenre
-    get subGenre(): string { return this._subGenre; }
-    set subGenre(value: string) { this._subGenre = value; }
-
-    // Implementasi getDeskripsiGenre untuk buku fiksi
-    protected getDeskripsiGenre(): string {
-        return `Fiksi - ${this._subGenre}`;
-    }
+    // Implementasi metode abstrak dari kelas Buku
+    // Polimorfisme: Implementasi spesifik untuk BukuFiksi
+    getDeskripsiGenre(): string { return `Fiksi - ${this.subGenre}`; }
 }
 
 // Kelas BukuNonFiksi: Turunan dari Buku untuk buku-buku non-fiksi
+// Pewarisan: BukuNonFiksi mewarisi properti dan metode dari Buku
 class BukuNonFiksi extends Buku {
-    private _topik: string;
-
     // Konstruktor BukuNonFiksi
-    constructor(judul: string, penulis: string, tahunTerbit: number, topik: string) {
-        super(judul, penulis, tahunTerbit);
-        this._topik = topik;
+    constructor(judul: string, penulis: string, tahunTerbit: number, public topik: string) {
+        // super: Memanggil konstruktor kelas induk (Buku)
+        super(undefined, judul, penulis, tahunTerbit);
     }
 
-    // Getter dan setter untuk topik
-    get topik(): string { return this._topik; }
-    set topik(value: string) { this._topik = value; }
-
-    // Implementasi getDeskripsiGenre untuk buku non-fiksi
-    protected getDeskripsiGenre(): string {
-        return `Non-Fiksi - ${this._topik}`;
-    }
+    // Implementasi metode abstrak dari kelas Buku
+    // Polimorfisme: Implementasi spesifik untuk BukuNonFiksi
+    getDeskripsiGenre(): string { return `Non-Fiksi - ${this.topik}`; }
 }
 
 // Kelas KoleksiBuku: Mengelola koleksi buku dan operasi terkait
+// Enkapsulasi: Menyembunyikan detail implementasi dan menyediakan antarmuka publik
 class KoleksiBuku {
-    // Array untuk menyimpan semua buku dalam koleksi
+    // Array private untuk menyimpan semua buku dalam koleksi
     private daftarBuku: Buku[] = [];
 
     // Menambahkan buku baru ke koleksi
-    public tambahBukuKeKoleksi(buku: Buku): void {
+    tambahBukuKeKoleksi(buku: Buku): void {
         this.daftarBuku.push(buku);
         this.perbaruiTampilanDaftarBuku();
     }
 
     // Memperbarui informasi buku yang sudah ada
-    public perbaruiInfoBuku(id: number, judul: string, penulis: string, tahunTerbit: number, jenisBuku: string, detailSpesifik: string): void {
-        const bukuLama = this.cariBukuBerdasarkanId(id);
-        if (bukuLama) {
-            // Membuat objek buku baru dengan informasi yang diperbarui
-            let bukuBaru: Buku;
-            if (jenisBuku === 'fiksi') {
-                bukuBaru = new BukuFiksi(judul, penulis, tahunTerbit, detailSpesifik);
-            } else {
-                bukuBaru = new BukuNonFiksi(judul, penulis, tahunTerbit, detailSpesifik);
-            }
-            // Mempertahankan ID buku yang lama
-            (bukuBaru as any)._id = id;
-            // Mengganti buku lama dengan buku baru dalam array
-            const index = this.daftarBuku.findIndex(b => b.id === id);
-            if (index !== -1) {
-                this.daftarBuku[index] = bukuBaru;
-            }
+    perbaruiInfoBuku(id: number, judul: string, penulis: string, tahunTerbit: number, jenisBuku: string, detailSpesifik: string): void {
+        const index = this.daftarBuku.findIndex(b => b.id === id);
+        if (index !== -1) {
+            // Polimorfisme: Membuat objek BukuFiksi atau BukuNonFiksi berdasarkan jenis
+            this.daftarBuku[index] = jenisBuku === 'fiksi' 
+                ? new BukuFiksi(judul, penulis, tahunTerbit, detailSpesifik)
+                : new BukuNonFiksi(judul, penulis, tahunTerbit, detailSpesifik);
+            (this.daftarBuku[index] as any)._id = id;
             this.perbaruiTampilanDaftarBuku();
         }
     }
 
     // Memperbarui tampilan daftar buku di UI
-    public perbaruiTampilanDaftarBuku(): void {
+    perbaruiTampilanDaftarBuku(): void {
         const outputElement = document.getElementById('output');
         if (outputElement) {
-            // Jika tidak ada buku, tampilkan pesan. Jika ada, tampilkan daftar buku
-            outputElement.innerHTML = this.daftarBuku.length === 0 ? "<p>Belum ada buku dalam koleksi.</p>" :
-                "<h2>Koleksi Buku:</h2>" + this.daftarBuku.map(buku => `
+            outputElement.innerHTML = this.daftarBuku.length === 0 
+                ? "<p>Belum ada buku dalam koleksi.</p>"
+                : "<h2>Koleksi Buku:</h2>" + this.daftarBuku.map(buku => `
                     <div>
                         <span><strong>- </strong></span>${buku.getDeskripsiLengkap()}
                         <button onclick="managerBuku.tampilkanFormEditBuku(${buku.id})">Edit</button>
@@ -125,44 +97,43 @@ class KoleksiBuku {
     }
 
     // Menghapus buku dari koleksi
-    public hapusBukuDariKoleksi(id: number): void {
+    hapusBukuDariKoleksi(id: number): void {
         this.daftarBuku = this.daftarBuku.filter(b => b.id !== id);
         this.perbaruiTampilanDaftarBuku();
     }
-    
+
     // Mencari buku berdasarkan ID
-    public cariBukuBerdasarkanId(id: number): Buku | undefined {
+    cariBukuBerdasarkanId(id: number): Buku | undefined {
         return this.daftarBuku.find(b => b.id === id);
     }
 }
 
 // Kelas ManagerBuku: Mengelola interaksi antara UI dan KoleksiBuku
+// Enkapsulasi: Menyembunyikan logika manajemen buku dari kode lain
 class ManagerBuku {
-    private koleksiBuku: KoleksiBuku;
     private idBukuYangSedangDiedit: number | null = null;
 
-    constructor(koleksiBuku: KoleksiBuku) {
-        this.koleksiBuku = koleksiBuku;
-    }
+    constructor(private koleksiBuku: KoleksiBuku) {}
 
     // Memproses input form untuk menambah atau memperbarui buku
-    public prosesFormBuku(): void {
-        // Mengambil nilai dari form input
+    prosesFormBuku(): void {
         const judul = (document.getElementById('judul') as HTMLInputElement).value;
         const penulis = (document.getElementById('penulis') as HTMLInputElement).value;
         const tahunTerbit = parseInt((document.getElementById('tahunTerbit') as HTMLInputElement).value);
         const jenisBuku = (document.getElementById('jenisBuku') as HTMLSelectElement).value;
         const detailSpesifik = (document.getElementById('detailSpesifik') as HTMLInputElement).value;
 
-        // Validasi input
-        if (this.validasiInputBuku(judul, penulis, tahunTerbit, jenisBuku, detailSpesifik)) {
+        if (judul && penulis && !isNaN(tahunTerbit) && jenisBuku && detailSpesifik) {
             if (this.idBukuYangSedangDiedit !== null) {
                 // Update buku yang ada
                 this.koleksiBuku.perbaruiInfoBuku(this.idBukuYangSedangDiedit, judul, penulis, tahunTerbit, jenisBuku, detailSpesifik);
                 this.selesaiEditBuku();
             } else {
                 // Tambah buku baru
-                const bukuBaru = this.buatObjekBuku(judul, penulis, tahunTerbit, jenisBuku, detailSpesifik);
+                // Polimorfisme: Membuat objek BukuFiksi atau BukuNonFiksi berdasarkan input
+                const bukuBaru = jenisBuku === 'fiksi'
+                    ? new BukuFiksi(judul, penulis, tahunTerbit, detailSpesifik)
+                    : new BukuNonFiksi(judul, penulis, tahunTerbit, detailSpesifik);
                 this.koleksiBuku.tambahBukuKeKoleksi(bukuBaru);
             }
             this.bersihkanFormBuku();
@@ -172,23 +143,28 @@ class ManagerBuku {
     }
 
     // Menampilkan form edit untuk buku tertentu
-    public tampilkanFormEditBuku(id: number): void {
+    tampilkanFormEditBuku(id: number): void {
         const buku = this.koleksiBuku.cariBukuBerdasarkanId(id);
         if (buku) {
-            this.isiFormDenganDataBuku(buku);
+            ['judul', 'penulis', 'tahunTerbit'].forEach(prop => 
+                (document.getElementById(prop) as HTMLInputElement).value = buku[prop as keyof Buku].toString()
+            );
+            (document.getElementById('jenisBuku') as HTMLSelectElement).value = buku instanceof BukuFiksi ? 'fiksi' : 'nonfiksi';
+            (document.getElementById('detailSpesifik') as HTMLInputElement).value = buku instanceof BukuFiksi ? buku.subGenre : (buku as BukuNonFiksi).topik;
+            (document.getElementById('tambahBukuBtn') as HTMLButtonElement).textContent = 'Update Buku';
             this.idBukuYangSedangDiedit = id;
         }
     }
 
     // Konfirmasi dan proses penghapusan buku
-    public konfirmasiHapusBuku(id: number): void {
+    konfirmasiHapusBuku(id: number): void {
         if (confirm("Apakah Anda yakin ingin menghapus buku ini dari koleksi?")) {
             this.koleksiBuku.hapusBukuDariKoleksi(id);
         }
     }
 
     // Inisialisasi aplikasi: set up event listener dan tampilkan daftar buku awal
-    public inisialisasiAplikasi(): void {
+    inisialisasiAplikasi(): void {
         const tambahBukuBtn = document.getElementById('tambahBukuBtn');
         if (tambahBukuBtn) {
             tambahBukuBtn.addEventListener('click', () => this.prosesFormBuku());
@@ -196,29 +172,6 @@ class ManagerBuku {
             console.error("Tombol 'Tambah Buku' tidak ditemukan.");
         }
         this.koleksiBuku.perbaruiTampilanDaftarBuku();
-    }
-
-    // Validasi input form buku
-    private validasiInputBuku(judul: string, penulis: string, tahunTerbit: number, jenisBuku: string, detailSpesifik: string): boolean {
-        return !!(judul && penulis && !isNaN(tahunTerbit) && jenisBuku && detailSpesifik);
-    }
-
-    // Membuat objek buku baru berdasarkan input
-    private buatObjekBuku(judul: string, penulis: string, tahunTerbit: number, jenisBuku: string, detailSpesifik: string): Buku {
-        return jenisBuku === 'fiksi' ?
-            new BukuFiksi(judul, penulis, tahunTerbit, detailSpesifik) :
-            new BukuNonFiksi(judul, penulis, tahunTerbit, detailSpesifik);
-    }
-
-    // Mengisi form dengan data buku yang akan diedit
-    private isiFormDenganDataBuku(buku: Buku): void {
-        (document.getElementById('judul') as HTMLInputElement).value = buku.judul;
-        (document.getElementById('penulis') as HTMLInputElement).value = buku.penulis;
-        (document.getElementById('tahunTerbit') as HTMLInputElement).value = buku.tahunTerbit.toString();
-        (document.getElementById('jenisBuku') as HTMLSelectElement).value = buku instanceof BukuFiksi ? 'fiksi' : 'nonfiksi';
-        (document.getElementById('detailSpesifik') as HTMLInputElement).value = buku instanceof BukuFiksi ? buku.subGenre : (buku as BukuNonFiksi).topik;
-        
-        (document.getElementById('tambahBukuBtn') as HTMLButtonElement).textContent = 'Update Buku';
     }
 
     // Menyelesaikan proses edit buku
@@ -237,10 +190,5 @@ class ManagerBuku {
 }
 
 // Inisialisasi aplikasi
-const koleksiBukuSaya = new KoleksiBuku();
-const managerBuku = new ManagerBuku(koleksiBukuSaya);
-
-// Event listener untuk memastikan DOM telah dimuat sebelum menjalankan inisialisasi
-document.addEventListener('DOMContentLoaded', () => {
-    managerBuku.inisialisasiAplikasi();
-});
+const managerBuku = new ManagerBuku(new KoleksiBuku());
+document.addEventListener('DOMContentLoaded', () => managerBuku.inisialisasiAplikasi());
